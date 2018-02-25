@@ -1,0 +1,21 @@
+language: rust
+sudo: false
+dist: trusty
+rust:
+- 1.22.1
+- stable
+- beta
+- nightly
+
+# Install travis-cargo which sets `--feature unstable` for nightly builds automatically
+before_script:
+  - |
+      pip install 'travis-cargo<0.2' --user &&
+      export PATH=$HOME/.local/bin:$PATH
+
+script:
+  - |
+      travis-cargo build &&
+      travis-cargo test
+
+cache: cargo
