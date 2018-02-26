@@ -6,3 +6,18 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
+
+#![allow(dead_code)]
+
+extern crate fnv;
+#[macro_use] extern crate quick_error;
+extern crate tempfile;
+
+#[macro_use] mod sugar;
+mod error;
+mod cmdline;
+mod fork;
+
+pub use sugar::ForkTestId;
+pub use error::{Error, Result};
+pub use fork::fork;
