@@ -159,8 +159,8 @@ where
             .arg(test_name)
             .env(OCCURS_ENV, &occurs)
             .stdin(process::Stdio::null())
-            .stdout(stdio_of_file(&file))
-            .stderr(stdio_of_file(&file));
+            .stdout(file.try_clone()?)
+            .stderr(file.try_clone()?);
         process_modifier(&mut command);
 
         let mut child = command.spawn().map(|p| KillOnDrop(p, file))?;
@@ -176,24 +176,6 @@ fn id_str<ID : Hash>(id: ID) -> String {
     id.hash(&mut hasher);
 
     return format!(":{:016X}", hasher.finish());
-}
-
-#[cfg(unix)]
-fn stdio_of_file(file: &fs::File) -> process::Stdio {
-    use std::os::unix::io::AsRawFd;
-    use std::os::unix::io::FromRawFd;
-    unsafe {
-        process::Stdio::from_raw_fd(file.as_raw_fd())
-    }
-}
-
-#[cfg(not(unix))]
-fn stdio_of_file(file: &fs::File) -> process::Stdio {
-    use std::os::windows::io::AsRawHandle;
-    use std::os::windows::io::FromRawHandle;
-    unsafe {
-        process::Stdio::from_raw_handle(file.as_raw_handle())
-    }
 }
 
 #[cfg(test)]
