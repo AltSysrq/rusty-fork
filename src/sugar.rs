@@ -12,6 +12,9 @@
 ///
 /// This is usually the best thing to pass for the `fork_id` argument of
 /// [`fork`](fn.fork.html).
+///
+/// The type of the expression this macro expands to is
+/// [`RustyForkId`](struct.RustyForkId.html).
 #[macro_export]
 macro_rules! rusty_fork_id { () => { {
     struct _RustyForkId;

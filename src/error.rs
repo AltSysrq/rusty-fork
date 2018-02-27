@@ -17,6 +17,8 @@ quick_error! {
     pub enum Error {
         /// An unknown flag was encountered when examining the current
         /// process's argument list.
+        ///
+        /// The string is the flag that was encountered.
         UnknownFlag(flag: String) {
             display("The flag '{:?}' was passed to the Rust test \
                      process, but rusty-fork does not know how to \
@@ -39,6 +41,9 @@ quick_error! {
         /// A flag was encountered when examining the current process's
         /// argument list which is known but cannot be handled in any sensible
         /// way.
+        ///
+        /// The strings are the flag encountered and a human-readable message
+        /// about why the flag could not be handled.
         DisallowedFlag(flag: String, message: String) {
             display("The flag '{:?}' was passed to the Rust test \
                      process, but rusty-fork cannot handle it; \

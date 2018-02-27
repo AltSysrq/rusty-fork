@@ -54,7 +54,7 @@
 //! ```
 //!
 //! Then, you can simply wrap any test(s) to be isolated with the
-//! [`rusty_fork_test!`](macro_rusty_fork_test.html) macro.
+//! [`rusty_fork_test!`](macro.rusty_fork_test.html) macro.
 //!
 //! ```
 //! #[macro_use] extern crate rusty_fork;

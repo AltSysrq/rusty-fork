@@ -36,7 +36,8 @@ use std::process::{Child, Command};
 /// # fn main() { my_test(); }
 /// ```
 ///
-/// Each test will be run in its own process.
+/// Each test will be run in its own process. If the subprocess exits
+/// unsuccessfully for any reason, including due to signals, the test fails.
 ///
 /// It is also possible to specify a timeout which is applied to all tests in
 /// the block, like so:
