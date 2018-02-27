@@ -12,7 +12,7 @@
 //! Some functionality in this module is useful to other implementors and
 //! unlikely to change. This subset is documented and considered stable.
 
-use std::process::Child;
+use std::process::{Child, Command};
 
 /// Run Rust tests in subprocesses.
 ///
@@ -73,12 +73,24 @@ macro_rules! rusty_fork_test {
     )*) => { $(
         $(#[$meta])*
         fn $test_name() {
+            // Eagerly convert everything to function pointers so that all
+            // tests use the same instantiation of `fork`.
+            fn body_fn() $body
+            let body: fn () = body_fn;
+
+            fn supervise_fn(child: &mut ::std::process::Child,
+                            _file: &mut ::std::fs::File) {
+                $crate::fork_test::supervise_child(child, $timeout)
+            }
+            let supervise:
+                fn (&mut ::std::process::Child, &mut ::std::fs::File) =
+                supervise_fn;
+
             $crate::fork(
                 rusty_fork_test_name!($test_name),
                 rusty_fork_id!(),
-                |_| (),
-                |child, _| $crate::fork_test::supervise_child(child, $timeout),
-                || $body).expect("forking test failed")
+                $crate::fork_test::no_configure_child,
+                supervise, body).expect("forking test failed")
         }
     )* };
 
@@ -121,6 +133,10 @@ pub fn supervise_child(child: &mut Child, timeout_ms: u64) {
                 "child exited unsuccessfully with {}", status);
     }
 }
+
+#[allow(missing_docs)]
+#[doc(hidden)]
+pub fn no_configure_child(_child: &mut Command) { }
 
 /// Transform a string representing a qualified path as generated via
 /// `module_path!()` into a qualified path as expected by the standard Rust
