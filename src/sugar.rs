@@ -13,20 +13,20 @@
 /// This is usually the best thing to pass for the `fork_id` argument of
 /// [`fork`](fn.fork.html).
 #[macro_export]
-macro_rules! fork_test_id { () => { {
-    struct _ForkTestId;
-    $crate::ForkTestId::of(::std::any::TypeId::of::<_ForkTestId>())
+macro_rules! rusty_fork_id { () => { {
+    struct _RustyForkId;
+    $crate::RustyForkId::of(::std::any::TypeId::of::<_RustyForkId>())
 } } }
 
 /// The type of the value produced by
-/// [`fork_test_id!`](macro.fork_test_id.html).
+/// [`rusty_fork_id!`](macro.rusty_fork_id.html).
 #[derive(Clone, Hash, PartialEq, Debug)]
-pub struct ForkTestId(::std::any::TypeId);
-impl ForkTestId {
+pub struct RustyForkId(::std::any::TypeId);
+impl RustyForkId {
     #[allow(missing_docs)]
     #[doc(hidden)]
     pub fn of(id: ::std::any::TypeId) -> Self {
-        ForkTestId(id)
+        RustyForkId(id)
     }
 }
 
@@ -34,6 +34,6 @@ impl ForkTestId {
 mod test {
     #[test]
     fn ids_are_actually_distinct() {
-        assert_ne!(fork_test_id!(), fork_test_id!());
+        assert_ne!(rusty_fork_id!(), rusty_fork_id!());
     }
 }

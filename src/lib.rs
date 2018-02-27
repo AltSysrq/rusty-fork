@@ -18,6 +18,6 @@ mod error;
 mod cmdline;
 mod fork;
 
-pub use sugar::ForkTestId;
+pub use sugar::RustyForkId;
 pub use error::{Error, Result};
 pub use fork::fork;

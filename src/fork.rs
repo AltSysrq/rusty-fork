@@ -20,7 +20,7 @@ use tempfile;
 use cmdline;
 use error::*;
 
-const OCCURS_ENV: &str = "FORKTEST_OCCURS";
+const OCCURS_ENV: &str = "RUSTY_FORK_OCCURS";
 const OCCURS_TERM_LENGTH: usize = 17; /* ':' plus 16 hexits */
 
 /// Simulate a process fork.
@@ -48,7 +48,7 @@ const OCCURS_TERM_LENGTH: usize = 17; /* ':' plus 16 hexits */
 /// `fork_id` is a unique identifier identifying this particular fork location.
 /// This *must* be stable across processes of the same executable; pointers are
 /// not suitable stable, and string constants may not be suitably unique. The
-/// [`fork_test_id!()`](macro.fork_test_id.html) macro is the recommended way
+/// [`rusty_fork_id!()`](macro.rusty_fork_id.html) macro is the recommended way
 /// to supply this parameter.
 ///
 /// If this is the parent process, `in_parent` is invoked, and the return value
@@ -67,7 +67,7 @@ const OCCURS_TERM_LENGTH: usize = 17; /* ':' plus 16 hexits */
 /// `process_modifier` is invoked on the `std::process::Command` immediately
 /// before spawning the new process. The callee may modify the process
 /// parameters if desired, but should not do anything that would modify or
-/// remove any environment variables beginning with `FORKTEST_`.
+/// remove any environment variables beginning with `RUSTY_FORK_`.
 ///
 /// ## Panics
 ///
@@ -105,7 +105,7 @@ where
     } else {
         // Prevent misconfiguration creating a fork bomb
         if occurs.len() > 16 * OCCURS_TERM_LENGTH {
-            panic!("fork-test: Not forking due to >=16 levels of recursion");
+            panic!("rusty-fork: Not forking due to >=16 levels of recursion");
         }
 
         let file = tempfile::tempfile()?;
@@ -217,7 +217,7 @@ mod test {
     #[test]
     fn fork_basically_works() {
         let status =
-            fork("fork::test::fork_basically_works", fork_test_id!(),
+            fork("fork::test::fork_basically_works", rusty_fork_id!(),
                  |_| (),
                  |child, _| child.wait().unwrap(),
                  || println!("hello from child")).unwrap();
@@ -228,11 +228,11 @@ mod test {
     fn child_output_captured_and_repeated() {
         let output = fork(
             "fork::test::child_output_captured_and_repeated",
-            fork_test_id!(),
+            rusty_fork_id!(),
             capturing_output, wait_for_child_output,
             || fork(
                 "fork::test::child_output_captured_and_repeated",
-                fork_test_id!(),
+                rusty_fork_id!(),
                 |_| (), wait_for_child,
                 || println!("hello from child")).unwrap())
             .unwrap();
@@ -243,11 +243,11 @@ mod test {
     fn child_killed_if_parent_exits_first() {
         let output = fork(
             "fork::test::child_killed_if_parent_exits_first",
-            fork_test_id!(),
+            rusty_fork_id!(),
             capturing_output, wait_for_child_output,
             || fork(
                 "fork::test::child_killed_if_parent_exits_first",
-                fork_test_id!(),
+                rusty_fork_id!(),
                 inherit_output, |_, _| (),
                 || {
                     sleep(1_000);
@@ -263,13 +263,13 @@ mod test {
     fn child_killed_if_parent_panics_first() {
         let output = fork(
             "fork::test::child_killed_if_parent_panics_first",
-            fork_test_id!(),
+            rusty_fork_id!(),
             capturing_output, wait_for_child_output,
             || {
                 assert!(
                     panic::catch_unwind(panic::AssertUnwindSafe(|| fork(
                         "fork::test::child_killed_if_parent_panics_first",
-                        fork_test_id!(),
+                        rusty_fork_id!(),
                         inherit_output,
                         |_, _| panic!("testing a panic, nothing to see here"),
                         || {
@@ -287,7 +287,7 @@ mod test {
     fn child_aborted_if_panics() {
         let status = fork(
             "fork::test::child_aborted_if_panics",
-            fork_test_id!(),
+            rusty_fork_id!(),
             |_| (),
             |child, _| child.wait().unwrap(),
             || panic!("testing a panic, nothing to see here")).unwrap();

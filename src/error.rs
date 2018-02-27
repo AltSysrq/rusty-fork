@@ -12,20 +12,20 @@ use std::io;
 use cmdline;
 
 quick_error! {
-    /// Enum for errors produced by the fork-test crate.
+    /// Enum for errors produced by the rusty-fork crate.
     #[derive(Debug)]
     pub enum Error {
         /// An unknown flag was encountered when examining the current
         /// process's argument list.
         UnknownFlag(flag: String) {
             display("The flag '{:?}' was passed to the Rust test \
-                     process, but fork-test does not know how to \
+                     process, but rusty-fork does not know how to \
                      handle it.\n\
                      If you are using the standard Rust \
                      test harness and have the latest version of the \
-                     fork-test crate, please report a bug to\n\
-                     \thttps://github.com/AltSysrq/fork-test/issues\n\
-                     In the mean time, you can tell fork-test how to \
+                     rusty-fork crate, please report a bug to\n\
+                     \thttps://github.com/AltSysrq/rusty-fork/issues\n\
+                     In the mean time, you can tell rusty-fork how to \
                      handle this flag by setting the environment variable \
                      `{}` to one of the following values:\n\
                      \tpass - Pass the flag (alone) to the child process\n\
@@ -41,7 +41,7 @@ quick_error! {
         /// way.
         DisallowedFlag(flag: String, message: String) {
             display("The flag '{:?}' was passed to the Rust test \
-                     process, but fork-test cannot handle it; \
+                     process, but rusty-fork cannot handle it; \
                      reason: {}", flag, message)
         }
         SpawnError(err: io::Error) {
@@ -52,5 +52,5 @@ quick_error! {
     }
 }
 
-/// General `Result` type for fork-test.
+/// General `Result` type for rusty-fork.
 pub type Result<T> = ::std::result::Result<T, Error>;
