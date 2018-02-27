@@ -237,4 +237,21 @@ mod test {
             e => panic!("Unexpected error: {}", e),
         }
     }
+
+    // Subprocess so we can change the environment without affecting other
+    // tests
+    rusty_fork_test! {
+        #[test]
+        fn define_args_via_env() {
+            env::set_var("RUSTY_FORK_FLAG_X", "pass");
+            env::set_var("RUSTY_FORK_FLAG_FOO", "pass-arg");
+            env::set_var("RUSTY_FORK_FLAG_BAR", "drop");
+            env::set_var("RUSTY_FORK_FLAG_BAZ", "drop-arg");
+
+            assert_eq!("-X", &strip("test -X foo").unwrap());
+            assert_eq!("--foo bar", &strip("test --foo bar").unwrap());
+            assert_eq!("", &strip("test --bar").unwrap());
+            assert_eq!("", &strip("test --baz --notaflag").unwrap());
+        }
+    }
 }
