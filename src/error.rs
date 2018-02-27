@@ -44,6 +44,7 @@ quick_error! {
                      process, but rusty-fork cannot handle it; \
                      reason: {}", flag, message)
         }
+        /// Spawning a subprocess failed.
         SpawnError(err: io::Error) {
             from()
             cause(err)
