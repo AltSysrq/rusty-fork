@@ -12,11 +12,15 @@
 extern crate fnv;
 #[macro_use] extern crate quick_error;
 extern crate tempfile;
+#[cfg(feature = "timeout")] extern crate wait_timeout;
 
 #[macro_use] mod sugar;
 mod error;
 mod cmdline;
 mod fork;
+
+#[macro_use]
+pub mod fork_test;
 
 pub use sugar::RustyForkId;
 pub use error::{Error, Result};

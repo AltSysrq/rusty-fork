@@ -17,13 +17,14 @@ fork-like interface.
 [badges]
 travis-ci = { repository = "AltSysrq/rusty-fork" }
 
-[features]
-
-default = []
-
 [dependencies]
-fnv = "1.0.6"
-quick-error = "1.2.1"
-tempfile = "2.2.0"
+fnv = "1.0"
+quick-error = "1.2"
+tempfile = "2.2"
+wait-timeout = { version = "0.1", optional = true }
 
 [dev-dependencies]
+
+[features]
+default = [ "timeout" ]
+timeout = [ "wait-timeout" ]
