@@ -56,21 +56,21 @@
 //! Then, you can simply wrap any test(s) to be isolated with the
 //! [`rusty_fork_test!`](macro.rusty_fork_test.html) macro.
 //!
-//! ```
+//! ```rust
 //! #[macro_use] extern crate rusty_fork;
 //!
 //! rusty_fork_test! {
-//! # /*
+//! # /* NOREADME
 //!     #[test]
-//! # */
+//! # NOREADME */
 //!     fn my_test() {
 //!         assert_eq!(2, 1 + 1);
 //!     }
 //!
 //!     // more tests...
 //! }
-//! #
-//! # fn main() { my_test(); }
+//! # // NOREADME
+//! # fn main() { my_test(); } // NOREADME
 //! ```
 //!
 //! For more advanced usage, have a look at the [`fork`](fn.fork.html)
@@ -116,6 +116,8 @@
 //!
 //! In general, arguments that affect which tests are run should be dropped,
 //! and others should be passed.
+//!
+//! <!-- ENDREADME -->
 
 extern crate fnv;
 #[macro_use] extern crate quick_error;
