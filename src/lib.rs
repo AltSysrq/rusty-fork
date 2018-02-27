@@ -7,8 +7,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![allow(dead_code)]
-
 extern crate fnv;
 #[macro_use] extern crate quick_error;
 extern crate tempfile;

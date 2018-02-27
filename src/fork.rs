@@ -91,6 +91,26 @@ where
     CHILD : FnOnce ()
 {
     let fork_id = id_str(fork_id);
+
+    // Erase the generics so we don't instantiate the actual implementation for
+    // every single test
+    let mut return_value = None;
+    let mut process_modifier = Some(process_modifier);
+    let mut in_parent = Some(in_parent);
+    let mut in_child = Some(in_child);
+
+    fork_impl(test_name, fork_id,
+              &mut |cmd| process_modifier.take().unwrap()(cmd),
+              &mut |child, file| return_value = Some(
+                  in_parent.take().unwrap()(child, file)),
+              &mut || in_child.take().unwrap()())
+        .map(|_| return_value.unwrap())
+}
+
+fn fork_impl(test_name: &str, fork_id: String,
+             process_modifier: &mut FnMut (&mut process::Command),
+             in_parent: &mut FnMut (&mut process::Child, &mut fs::File),
+             in_child: &mut FnMut ()) -> Result<()> {
     let mut occurs = env::var(OCCURS_ENV).unwrap_or_else(|_| String::new());
     if occurs.contains(&fork_id) {
         match panic::catch_unwind(panic::AssertUnwindSafe(in_child)) {
