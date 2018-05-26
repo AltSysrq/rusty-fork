@@ -20,7 +20,7 @@ travis-ci = { repository = "AltSysrq/rusty-fork" }
 [dependencies]
 fnv = "1.0"
 quick-error = "1.2"
-tempfile = "2.2"
+tempfile = "3.0"
 wait-timeout = { version = "0.1", optional = true }
 
 [dev-dependencies]
