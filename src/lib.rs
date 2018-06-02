@@ -129,7 +129,9 @@ extern crate tempfile;
 mod error;
 mod cmdline;
 mod fork;
+mod child_wrapper;
 
 pub use sugar::RustyForkId;
 pub use error::{Error, Result};
 pub use fork::fork;
+pub use child_wrapper::{ChildWrapper, ExitStatusWrapper};

@@ -19,6 +19,7 @@ use tempfile;
 
 use cmdline;
 use error::*;
+use child_wrapper::ChildWrapper;
 
 const OCCURS_ENV: &str = "RUSTY_FORK_OCCURS";
 const OCCURS_TERM_LENGTH: usize = 17; /* ':' plus 16 hexits */
@@ -87,7 +88,7 @@ pub fn fork<ID, MODIFIER, PARENT, CHILD, R>(
 where
     ID : Hash,
     MODIFIER : FnOnce (&mut process::Command),
-    PARENT : FnOnce (&mut process::Child, &mut fs::File) -> R,
+    PARENT : FnOnce (&mut ChildWrapper, &mut fs::File) -> R,
     CHILD : FnOnce ()
 {
     let fork_id = id_str(fork_id);
@@ -109,7 +110,7 @@ where
 
 fn fork_impl(test_name: &str, fork_id: String,
              process_modifier: &mut FnMut (&mut process::Command),
-             in_parent: &mut FnMut (&mut process::Child, &mut fs::File),
+             in_parent: &mut FnMut (&mut ChildWrapper, &mut fs::File),
              in_child: &mut FnMut ()) -> Result<()> {
     let mut occurs = env::var(OCCURS_ENV).unwrap_or_else(|_| String::new());
     if occurs.contains(&fork_id) {
@@ -130,13 +131,11 @@ fn fork_impl(test_name: &str, fork_id: String,
 
         let file = tempfile::tempfile()?;
 
-        struct KillOnDrop(process::Child, fs::File);
+        struct KillOnDrop(ChildWrapper, fs::File);
         impl Drop for KillOnDrop {
             fn drop(&mut self) {
                 // Kill the child if it hasn't exited yet
-                if let Ok(None) = self.0.try_wait() {
-                    let _ = self.0.kill();
-                }
+                let _ = self.0.kill();
 
                 // Copy the child's output to our own
                 // Awkwardly, `print!()` and `println!()` are our only gateway
@@ -183,7 +182,8 @@ fn fork_impl(test_name: &str, fork_id: String,
             .stderr(file.try_clone()?);
         process_modifier(&mut command);
 
-        let mut child = command.spawn().map(|p| KillOnDrop(p, file))?;
+        let mut child = command.spawn().map(ChildWrapper::new)
+            .map(|p| KillOnDrop(p, file))?;
 
         let ret = in_parent(&mut child.0, &mut child.1);
 
@@ -221,15 +221,16 @@ mod test {
             .stderr(process::Stdio::inherit());
     }
 
-    fn wait_for_child_output(child: &mut process::Child,
+    fn wait_for_child_output(child: &mut ChildWrapper,
                              _file: &mut fs::File) -> String {
         let mut output = String::new();
-        child.stdout.as_mut().unwrap().read_to_string(&mut output).unwrap();
+        child.inner_mut().stdout.as_mut().unwrap()
+            .read_to_string(&mut output).unwrap();
         assert!(child.wait().unwrap().success());
         output
     }
 
-    fn wait_for_child(child: &mut process::Child,
+    fn wait_for_child(child: &mut ChildWrapper,
                       _file: &mut fs::File) {
         assert!(child.wait().unwrap().success());
     }

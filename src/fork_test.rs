@@ -12,7 +12,9 @@
 //! Some functionality in this module is useful to other implementors and
 //! unlikely to change. This subset is documented and considered stable.
 
-use std::process::{Child, Command};
+use std::process::Command;
+
+use child_wrapper::ChildWrapper;
 
 /// Run Rust tests in subprocesses.
 ///
@@ -79,12 +81,12 @@ macro_rules! rusty_fork_test {
             fn body_fn() $body
             let body: fn () = body_fn;
 
-            fn supervise_fn(child: &mut ::std::process::Child,
+            fn supervise_fn(child: &mut $crate::ChildWrapper,
                             _file: &mut ::std::fs::File) {
                 $crate::fork_test::supervise_child(child, $timeout)
             }
             let supervise:
-                fn (&mut ::std::process::Child, &mut ::std::fs::File) =
+                fn (&mut $crate::ChildWrapper, &mut ::std::fs::File) =
                 supervise_fn;
 
             $crate::fork(
@@ -125,7 +127,7 @@ macro_rules! rusty_fork_test_name {
 
 #[allow(missing_docs)]
 #[doc(hidden)]
-pub fn supervise_child(child: &mut Child, timeout_ms: u64) {
+pub fn supervise_child(child: &mut ChildWrapper, timeout_ms: u64) {
     if timeout_ms > 0 {
         wait_timeout(child, timeout_ms)
     } else {
@@ -147,9 +149,8 @@ pub fn fix_module_path(path: &str) -> &str {
 }
 
 #[cfg(feature = "timeout")]
-fn wait_timeout(child: &mut Child, timeout_ms: u64) {
+fn wait_timeout(child: &mut ChildWrapper, timeout_ms: u64) {
     use std::time::Duration;
-    use wait_timeout::ChildExt;
 
     let timeout = Duration::from_millis(timeout_ms);
     let status = child.wait_timeout(timeout).expect("failed to wait for child");
@@ -162,7 +163,7 @@ fn wait_timeout(child: &mut Child, timeout_ms: u64) {
 }
 
 #[cfg(not(feature = "timeout"))]
-fn wait_timeout(_: &mut Child, _: u64) {
+fn wait_timeout(_: &mut ChildWrapper, _: u64) {
     panic!("Using the timeout feature of rusty_fork_test! requires \
             enabling the `timeout` feature on the rusty-fork crate.");
 }
