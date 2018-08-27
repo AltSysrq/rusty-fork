@@ -1,3 +1,10 @@
+## 0.2.1
+
+### Bug Fixes
+
+- Dependency on `wait_timeout` crate now requires `0.1.4` rather than `0.1`
+  since the build doesn't work with older versions.
+
 ## 0.2.0
 
 ### Breaking changes
