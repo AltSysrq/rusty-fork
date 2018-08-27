@@ -44,7 +44,7 @@
 //!
 //! ```toml
 //! [dev-dependencies]
-//! rusty-fork = "0.2.0"
+//! rusty-fork = "0.2.1"
 //! ```
 //!
 //! and to your crate root add
