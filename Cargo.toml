@@ -8,6 +8,7 @@ repository = "https://github.com/altsysrq/rusty-fork"
 documentation = "https://docs.rs/rusty-fork"
 keywords = ["testing", "process", "fork"]
 categories = ["development-tools::testing"]
+exclude = ["/gen-readme.sh", "/readme-*.md"]
 
 description = """
 Cross-platform library for running Rust tests in sub-processes using a
