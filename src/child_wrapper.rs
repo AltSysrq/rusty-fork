@@ -16,13 +16,13 @@ use std::time::Duration;
 #[cfg(feature = "timeout")]
 use wait_timeout::ChildExt;
 
-/// Wraps `std::process::ExitStatus` and (if enabled)
-/// `wait_timeout::ExitStatus` to give a uniform interface to both.
+/// Wraps `std::process::ExitStatus`. Historically, this was due to the
+/// `wait_timeout` crate having its own `ExitStatus` type.
 ///
 /// Method documentation is copied from the [Rust std
 /// docs](https://doc.rust-lang.org/stable/std/process/struct.ExitStatus.html)
 /// and the [`wait_timeout`
-/// docs](https://docs.rs/wait-timeout/0.1.5/wait_timeout/struct.ExitStatus.html)
+/// docs](https://docs.rs/wait-timeout/0.1.5/wait_timeout/struct.ExitStatus.html).
 #[derive(Clone, Copy)]
 pub struct ExitStatusWrapper(ExitStatusEnum);
 

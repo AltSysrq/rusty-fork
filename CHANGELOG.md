@@ -1,3 +1,9 @@
+## 0.2.2
+
+### Minor changes
+
+- `wait_timeout` has been bumped to `0.2.0`.
+
 ## 0.2.1
 
 ### Bug Fixes
