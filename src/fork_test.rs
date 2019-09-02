@@ -90,8 +90,8 @@ macro_rules! rusty_fork_test {
                 supervise_fn;
 
             $crate::fork(
-                rusty_fork_test_name!($test_name),
-                rusty_fork_id!(),
+                $crate::rusty_fork_test_name!($test_name),
+                $crate::rusty_fork_id!(),
                 $crate::fork_test::no_configure_child,
                 supervise, body).expect("forking test failed")
         }
