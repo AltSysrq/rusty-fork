@@ -1,3 +1,15 @@
+## 0.3.0
+
+### Breaking Changes
+
+- The minimum required Rust version is now 1.32.0.
+
+### Improvements
+
+- `rusty_fork_test!` can now be `use`d in Rust 2018 code.
+
+- The flag "--report-time" flag is now understood.
+
 ## 0.2.2
 
 ### Minor changes
