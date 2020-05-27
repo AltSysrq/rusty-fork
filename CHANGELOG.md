@@ -8,7 +8,9 @@
 
 - `rusty_fork_test!` can now be `use`d in Rust 2018 code.
 
-- The flag "--report-time" flag is now understood.
+- The following flags to the test process are now understood: `--ensure-time`,
+  `--exclude-should-panic`, `--force-run-in-process`, `--include-ignored`,
+  `--report-time`, `--show-output`.
 
 ## 0.2.2
 
