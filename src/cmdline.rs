@@ -42,6 +42,7 @@ static KNOWN_FLAGS: &[(&str, FlagType)] = &[
     ("--logfile", FlagType::Drop(true)),
     ("--nocapture", FlagType::Drop(true)),
     ("--test-threads", FlagType::Drop(true)),
+    ("--report-time", FlagType::Drop(false)),
     ("--skip", FlagType::Drop(true)),
     ("-q", FlagType::Drop(false)),
     ("--quiet", FlagType::Drop(false)),
