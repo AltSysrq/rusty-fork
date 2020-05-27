@@ -1,5 +1,5 @@
 //-
-// Copyright 2018 Jason Lingle
+// Copyright 2018, 2020 Jason Lingle
 //
 // Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 // http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
@@ -22,7 +22,7 @@ use crate::child_wrapper::ChildWrapper;
 /// functions.
 ///
 /// ```
-/// #[macro_use] extern crate rusty_fork;
+/// use rusty_fork::rusty_fork_test;
 ///
 /// rusty_fork_test! {
 /// # /*
@@ -45,7 +45,7 @@ use crate::child_wrapper::ChildWrapper;
 /// the block, like so:
 ///
 /// ```
-/// #[macro_use] extern crate rusty_fork;
+/// use rusty_fork::rusty_fork_test;
 ///
 /// rusty_fork_test! {
 ///     #![rusty_fork(timeout_ms = 1000)]

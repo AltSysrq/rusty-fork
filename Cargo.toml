@@ -1,6 +1,6 @@
 [package]
 name = "rusty-fork"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["Jason Lingle"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
