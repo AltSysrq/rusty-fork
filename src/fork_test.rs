@@ -14,7 +14,7 @@
 
 use std::process::Command;
 
-use child_wrapper::ChildWrapper;
+use crate::child_wrapper::ChildWrapper;
 
 /// Run Rust tests in subprocesses.
 ///

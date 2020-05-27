@@ -11,7 +11,7 @@
 
 use std::env;
 
-use error::*;
+use crate::error::*;
 
 /// How a hyphen-prefixed argument passed to the parent process should be
 /// handled when constructing the command-line for the child process.
@@ -60,7 +60,7 @@ fn look_up_flag_from_table(flag: &str) -> Option<FlagType> {
 pub(crate) fn env_var_for_flag(flag: &str) -> String {
     let mut var = "RUSTY_FORK_FLAG_".to_owned();
     var.push_str(
-        &flag.trim_left_matches('-').to_uppercase().replace('-', "_"));
+        &flag.trim_start_matches('-').to_uppercase().replace('-', "_"));
     var
 }
 
