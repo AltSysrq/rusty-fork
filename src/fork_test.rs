@@ -72,13 +72,52 @@ macro_rules! rusty_fork_test {
     (#![rusty_fork(timeout_ms = $timeout:expr)]
      $(
          $(#[$meta:meta])*
-         fn $test_name:ident() $body:block
+         fn $test_name:ident()$( -> $ret:ty)? $body:block
     )*) => { $(
+        $crate::rusty_fork_test_ret!($timeout, [$($meta)*], $test_name, $body$(, $ret)?);
+    )* };
+
+    ($(
+         $(#[$meta:meta])*
+         fn $test_name:ident()$( -> $ret:ty)? $body:block
+    )*) => {
+        $crate::rusty_fork_test! {
+            #![rusty_fork(timeout_ms = 0)]
+
+            $($(#[$meta])* fn $test_name()$( -> $ret)? $body)*
+        }
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! rusty_fork_test_ret {
+    ($timeout:expr, [$($meta:meta)*], $test_name:ident, $body:block) => {
+        $crate::rusty_fork_test_inner!($timeout, [$($meta)*], $test_name, fn body_fn() $body);
+    };
+
+    ($timeout:expr, [$($meta:meta)*], $test_name:ident, $body:block, $ret:ty) => {
+        $crate::rusty_fork_test_inner!(
+            $timeout,
+            [$($meta)*],
+            $test_name,
+            fn body_fn() {
+                fn body_fn() -> $ret $body
+                body_fn().unwrap();
+            }
+        );
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! rusty_fork_test_inner {
+    ($timeout:expr, [$($meta:meta)*], $test_name:ident, $body_fn:stmt) => {
         $(#[$meta])*
         fn $test_name() {
             // Eagerly convert everything to function pointers so that all
             // tests use the same instantiation of `fork`.
-            fn body_fn() $body
+            $body_fn
             let body: fn () = body_fn;
 
             fn supervise_fn(child: &mut $crate::ChildWrapper,
@@ -94,17 +133,6 @@ macro_rules! rusty_fork_test {
                 $crate::rusty_fork_id!(),
                 $crate::fork_test::no_configure_child,
                 supervise, body).expect("forking test failed")
-        }
-    )* };
-
-    ($(
-         $(#[$meta:meta])*
-         fn $test_name:ident() $body:block
-    )*) => {
-        rusty_fork_test! {
-            #![rusty_fork(timeout_ms = 0)]
-
-            $($(#[$meta])* fn $test_name() $body)*
         }
     };
 }
@@ -170,6 +198,8 @@ fn wait_timeout(_: &mut ChildWrapper, _: u64) {
 
 #[cfg(test)]
 mod test {
+    use std::io::Result;
+
     rusty_fork_test! {
         #[test]
         fn trivial() { }
@@ -183,6 +213,23 @@ mod test {
         #[test]
         #[should_panic]
         fn aborting_child() {
+            ::std::process::abort();
+        }
+
+        #[test]
+        fn trivial_result() -> Result<()> {
+            Ok(())
+        }
+
+        #[test]
+        #[should_panic]
+        fn panicking_child_result() -> Result<()> {
+            panic!("just testing a panic, nothing to see here");
+        }
+
+        #[test]
+        #[should_panic]
+        fn aborting_child_result() -> Result<()> {
             ::std::process::abort();
         }
     }
