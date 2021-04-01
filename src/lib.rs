@@ -127,4 +127,4 @@ pub use crate::error::{Error, Result};
 pub use crate::fork::fork;
 pub use crate::child_wrapper::{ChildWrapper, ExitStatusWrapper};
 #[cfg(feature = "macro")]
-pub use rusty_fork_macro::test_fork;
+pub use rusty_fork_macro::fork_test;
