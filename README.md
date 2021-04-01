@@ -29,9 +29,9 @@ optional timeouts.
 - The [`fork`](fn.fork.html) function which can be used as a building block
 to make other types of process isolation strategies.
 
-- The [`#[fork_test]`] proc macro, which works exactly like `rusty_fork_test!`,
+- The `#[fork_test]` proc macro, which works exactly like `rusty_fork_test!`,
   but with the additionaly feature of supporting `async` functions. It is gated
-  behind the [`macro`] crate feature flag.
+  behind the `macro` crate feature flag.
 
 ## Quick Start
 

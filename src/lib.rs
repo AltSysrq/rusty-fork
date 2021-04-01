@@ -26,7 +26,7 @@
 //! as the current working directory, can do so without interfering with other
 //! tests.
 //!
-//! This crate itself provides two things:
+//! This crate itself provides three things:
 //!
 //! - The [`rusty_fork_test!`](macro.rusty_fork_test.html) macro, which is a
 //! simple way to wrap standard Rust tests to be run in subprocesses with
@@ -34,6 +34,10 @@
 //!
 //! - The [`fork`](fn.fork.html) function which can be used as a building block
 //! to make other types of process isolation strategies.
+//!
+//! - The [`#[fork_test]`](crate::fork_test) proc macro, which works exactly like
+//!   `rusty_fork_test!`, but with the additionaly feature of supporting `async` functions. It is
+//1   gated behind the `macro` crate feature flag.
 //!
 //! ## Quick Start
 //!
