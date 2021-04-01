@@ -77,7 +77,7 @@ pub fn fork_test(args: TokenStream, item: TokenStream) -> TokenStream {
 
     // defaults
     let mut crate_name = quote::quote! { rusty_fork };
-    let mut timeout = quote::quote! { 0 };
+    let mut timeout = quote::quote! {};
 
     // may be changed by the user
     for arg in args {
@@ -86,7 +86,7 @@ pub fn fork_test(args: TokenStream, item: TokenStream) -> TokenStream {
                 match ident.to_string().as_str() {
                     "timeout_ms" => {
                         if let Lit::Int(int) = name_value.lit {
-                            timeout = int.to_token_stream();
+                            timeout = quote::quote! { #![rusty_fork(timeout_ms = #int)] }
                         }
                     }
                     "crate" => {
@@ -113,16 +113,16 @@ pub fn fork_test(args: TokenStream, item: TokenStream) -> TokenStream {
 
     let item = syn::parse_macro_input!(item as ItemFn);
 
-    let fn_attrs = &item.attrs;
-    let fn_sig = &item.sig;
-    let fn_body = &item.block;
-    let fn_name = &fn_sig.ident;
+    let fn_attrs = item.attrs;
+    let fn_vis = item.vis;
+    let fn_sig = item.sig;
+    let fn_body = item.block;
 
     // the default is that we add the `#[test]` for the use
     let mut test = quote::quote! { #[test] };
 
     // we should still support a use case where the user adds it himself
-    for attr in fn_attrs {
+    for attr in &fn_attrs {
         if let Some(ident) = attr.path.get_ident() {
             if ident == "test" {
                 test = quote::quote! {};
@@ -141,45 +141,13 @@ pub fn fork_test(args: TokenStream, item: TokenStream) -> TokenStream {
         .into();
     }
 
-    // support returning `Result`
-    let body_fn = if let ReturnType::Type(_, ret_ty) = &fn_sig.output {
-        quote::quote! {
-            fn body_fn() {
-                fn body_fn() -> #ret_ty #fn_body
-                body_fn().unwrap();
-            }
-        }
-    } else {
-        quote::quote! {
-            fn body_fn() #fn_body
-        }
-    };
-
     (quote::quote! {
-        #test
-        #(#fn_attrs)*
-        fn #fn_name() {
-            // Eagerly convert everything to function pointers so that all
-            // tests use the same instantiation of `fork`.
-            #body_fn
-            let body: fn () = body_fn;
+        ::#crate_name::rusty_fork_test! {
+            #timeout
 
-            fn supervise_fn(
-                child: &mut ::#crate_name::ChildWrapper,
-                _file: &mut ::std::fs::File
-            ) {
-                ::#crate_name::fork_test::supervise_child(child, #timeout)
-            }
-            let supervise:
-                fn (&mut ::#crate_name::ChildWrapper, &mut ::std::fs::File) =
-                supervise_fn;
-            ::#crate_name::fork(
-                ::#crate_name::rusty_fork_test_name!(#fn_name),
-                ::#crate_name::rusty_fork_id!(),
-                ::#crate_name::fork_test::no_configure_child,
-                supervise,
-                body
-            ).expect("forking test failed")
+            #test
+            #(#fn_attrs)*
+            #fn_vis #fn_sig #fn_body
         }
     })
     .into()
@@ -235,7 +203,20 @@ mod test {
 
     #[tokio::test]
     #[fork_test]
-    async fn my_test() {
-        assert!(true);
+    async fn async_test() {
+        tokio::task::spawn(async {
+            println!("hello from child");
+        })
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test]
+    #[fork_test]
+    async fn async_return_test() -> std::result::Result<(), tokio::task::JoinError> {
+        tokio::task::spawn(async {
+            println!("hello from child");
+        })
+        .await
     }
 }
