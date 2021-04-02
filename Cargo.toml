@@ -19,9 +19,13 @@ fork-like interface.
 [badges]
 travis-ci = { repository = "AltSysrq/rusty-fork" }
 
+[workspace]
+members = ["rusty-fork-macro"]
+
 [dependencies]
 fnv = "1.0"
 quick-error = "1.2"
+rusty-fork-macro = { path = "rusty-fork-macro", optional = true }
 tempfile = "3.0"
 wait-timeout = { version = "0.2", optional = true }
 
@@ -29,4 +33,5 @@ wait-timeout = { version = "0.2", optional = true }
 
 [features]
 default = [ "timeout" ]
+macro = [ "rusty-fork-macro" ]
 timeout = [ "wait-timeout" ]
