@@ -72,14 +72,14 @@ macro_rules! rusty_fork_test {
     (#![rusty_fork(timeout_ms = $timeout:expr)]
      $(
          $(#[$meta:meta])*
-         fn $test_name:ident() $body:block
+         fn $test_name:ident() $( -> $test_return:ty )? $body:block
     )*) => { $(
         $(#[$meta])*
         fn $test_name() {
             // Eagerly convert everything to function pointers so that all
             // tests use the same instantiation of `fork`.
-            fn body_fn() $body
-            let body: fn () = body_fn;
+            fn body_fn() $( -> $test_return )? $body
+            let body: fn () $( -> $test_return )? = body_fn;
 
             fn supervise_fn(child: &mut $crate::ChildWrapper,
                             _file: &mut ::std::fs::File) {
@@ -99,12 +99,12 @@ macro_rules! rusty_fork_test {
 
     ($(
          $(#[$meta:meta])*
-         fn $test_name:ident() $body:block
+         fn $test_name:ident() $( -> $test_return:ty )? $body:block
     )*) => {
         rusty_fork_test! {
             #![rusty_fork(timeout_ms = 0)]
 
-            $($(#[$meta])* fn $test_name() $body)*
+            $($(#[$meta])* fn $test_name() $( -> $test_return )?  $body)*
         }
     };
 }
@@ -173,6 +173,9 @@ mod test {
     rusty_fork_test! {
         #[test]
         fn trivial() { }
+
+         #[test]
+        fn trivial_with_return() -> Result<(), &'static str> { Ok(()) }
 
         #[test]
         #[should_panic]
