@@ -79,7 +79,7 @@ const OCCURS_TERM_LENGTH: usize = 17; /* ':' plus 16 hexits */
 /// executable.
 ///
 /// Panics if any argument to the current process is not valid UTF-8.
-pub fn fork<ID, MODIFIER, PARENT, CHILD, R>(
+pub fn fork<ID, MODIFIER, PARENT, CHILD, R, T>(
     test_name: &str,
     fork_id: ID,
     process_modifier: MODIFIER,
@@ -89,7 +89,7 @@ where
     ID : Hash,
     MODIFIER : FnOnce (&mut process::Command),
     PARENT : FnOnce (&mut ChildWrapper, &mut fs::File) -> R,
-    CHILD : FnOnce ()
+    CHILD : FnOnce () -> T
 {
     let fork_id = id_str(fork_id);
 
@@ -108,10 +108,10 @@ where
         .map(|_| return_value.unwrap())
 }
 
-fn fork_impl(test_name: &str, fork_id: String,
+fn fork_impl<T>(test_name: &str, fork_id: String,
              process_modifier: &mut dyn FnMut (&mut process::Command),
              in_parent: &mut dyn FnMut (&mut ChildWrapper, &mut fs::File),
-             in_child: &mut dyn FnMut ()) -> Result<()> {
+             in_child: &mut dyn FnMut () -> T) -> Result<()> {
     let mut occurs = env::var(OCCURS_ENV).unwrap_or_else(|_| String::new());
     if occurs.contains(&fork_id) {
         match panic::catch_unwind(panic::AssertUnwindSafe(in_child)) {
