@@ -1,3 +1,10 @@
+## 0.3.1
+
+### Improvements
+
+The `--fail-fast`, `--shuffle`, and `--shuffle-seed` command-line arguments are
+understood.
+
 ## 0.3.0
 
 ### Breaking Changes

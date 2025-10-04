@@ -1,8 +1,6 @@
 # rusty-fork
 
-[![Build Status](https://travis-ci.org/AltSysrq/rusty-fork.svg?branch=master)](https://travis-ci.org/AltSysrq/rusty-fork)
 [![](http://meritbadge.herokuapp.com/rusty-fork)](https://crates.io/crates/rusty-fork)
-
 Rusty-fork provides a way to "fork" unit tests into separate processes.
 
 There are a number of reasons to want to run some tests in isolated
