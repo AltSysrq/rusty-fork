@@ -18,7 +18,7 @@ fork-like interface.
 
 [dependencies]
 fnv = "1.0"
-quick-error = "1.2"
+quick-error = "2.0"
 tempfile = "3.0"
 wait-timeout = { version = "0.2", optional = true }
 
