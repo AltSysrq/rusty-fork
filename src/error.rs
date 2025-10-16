@@ -52,7 +52,7 @@ quick_error! {
         /// Spawning a subprocess failed.
         SpawnError(err: io::Error) {
             from()
-            cause(err)
+            source(err)
             display("Spawn failed: {}", err)
         }
     }
